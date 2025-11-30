@@ -33,3 +33,25 @@ VALUES
 ('Sneha', 25, 'Chennai', 'Velachery');
 
 SELECT * FROM agents;
+
+- ---------------- FastAPI CRUD connected to PostgreSQL ------------
+
+pip install fastapi uvicorn sqlalchemy psycopg2
+
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, declarative_base
+
+DATABASE_URL = "postgresql://postgres:yourpassword@localhost:5432/level1"
+
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+autocommit - prevents accidental writes ; ensures the transaction safely 
+autoflush - setting it to false givesmore control & prevents unexpected writes during queries
+Flushing = sending pending changes to DB without committing. 
+bind  -- > this tells SQL Alchemy to “Use this database engine for all sessions.”
+
+Base = declarative_base()
+
+- ----------to access the application apis --
+http://0.0.0.0:8000

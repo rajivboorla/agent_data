@@ -1,68 +1,77 @@
-from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from typing import Dict
+import uvicorn
+from fastapi import FastAPI, Depends, HTTPException
+from sqlalchemy.orm import Session
+
+from database import SessionLocal, engine
+from models import Base, Agent
+from schemas import AgentCreate, AgentResponse
 
 app = FastAPI()
 
-# ---- Pydantic Schema ----
-class Agent(BaseModel):
-    agent_id: int
-    name: str
-    age: int
-    city: str
-    area: str
+# Create tables if not present
+Base.metadata.create_all(bind=engine)
+
+# Dependency
+def get_db():
+    """
+    Yield a database session.
+    Create a new database session for a request and close it after the request is done
+    this prevents memory leaks and ensures that connection errors.
+    
+    """ 
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
-# ---- In-Memory DB (Dict) ----
-agents_db: Dict[int, Agent] = {}
+@app.post("/agents", response_model=AgentResponse)
+def create_agent(agent: AgentCreate, db: Session = Depends(get_db)):
+    db_agent = Agent(**agent.dict())
+    db.add(db_agent)
+    db.commit()
+    db.refresh(db_agent)
+    return db_agent
 
 
-# -----------------------------
-#          CREATE (POST)
-# # -----------------------------
-# @app.post("/agents")
-# def create_agent(agent: Agent):
-#     if agent.agent_id in agents_db:
-#         raise HTTPException(status_code=400, detail="Agent ID already exists")
-
-#     agents_db[agent.agent_id] = agent
-#     return {"message": "Agent created successfully", "agent": agent}
+@app.get("/agents", response_model=list[AgentResponse])
+def get_agents(db: Session = Depends(get_db)):
+    return db.query(Agent).all()
 
 
-# # -----------------------------
-# #          READ (GET)
-# # -----------------------------
-# @app.get("/agents")
-# def get_all_agents():
-#     return list(agents_db.values())
+@app.get("/agents/{agent_id}", response_model=AgentResponse)
+def get_agent(agent_id: int, db: Session = Depends(get_db)):
+    agent = db.query(Agent).filter(Agent.agent_id == agent_id).first()
+    if not agent:
+        raise HTTPException(status_code=404, detail="Agent not found")
+    return agent
 
 
-# @app.get("/agents/{agent_id}")
-# def get_agent(agent_id: int):
-#     if agent_id not in agents_db:
-#         raise HTTPException(status_code=404, detail="Agent not found")
-#     return agents_db[agent_id]
+@app.put("/agents/{agent_id}", response_model=AgentResponse)
+def update_agent(agent_id: int, updated: AgentCreate, db: Session = Depends(get_db)):
+    agent = db.query(Agent).filter(Agent.agent_id == agent_id).first()
+    if not agent:
+        raise HTTPException(status_code=404, detail="Agent not found")
+
+    for key, value in updated.dict().items():
+        setattr(agent, key, value)
+
+    db.commit()
+    db.refresh(agent)
+    return agent
 
 
-# # -----------------------------
-# #          UPDATE (PUT)
-# # -----------------------------
-# @app.put("/agents/{agent_id}")
-# def update_agent(agent_id: int, updated_agent: Agent):
-#     if agent_id not in agents_db:
-#         raise HTTPException(status_code=404, detail="Agent not found")
+@app.delete("/agents/{agent_id}")
+def delete_agent(agent_id: int, db: Session = Depends(get_db)):
+    agent = db.query(Agent).filter(Agent.agent_id == agent_id).first()
+    if not agent:
+        raise HTTPException(status_code=404, detail="Agent not found")
 
-#     agents_db[agent_id] = updated_agent
-#     return {"message": "Agent updated successfully", "agent": updated_agent}
+    db.delete(agent)
+    db.commit()
+    return {"message": "Agent deleted successfully"}
 
 
-# # -----------------------------
-# #          DELETE (DELETE)
-# # -----------------------------
-# @app.delete("/agents/{agent_id}")
-# def delete_agent(agent_id: int):
-#     if agent_id not in agents_db:
-#         raise HTTPException(status_code=404, detail="Agent not found")
-
-#     del agents_db[agent_id]
-#     return {"message": "Agent deleted successfully"}
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
