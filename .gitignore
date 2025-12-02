@@ -9,9 +9,13 @@
 
 # Ignore Python cache
 __pycache__/
+frontend/Frontend/node_modules
 
 # Ignore specific file
 secret.txt
+frontend/Frontend/public
+frontend/Frontend/src/reportWebVitals.js
+frontend/Frontend/vite.config.js
 
 # Ignore folder
 uploads/
@@ -23,3 +27,4 @@ Thumbs.db
 # Ignore IDE files
 .vscode/
 .idea/
+
