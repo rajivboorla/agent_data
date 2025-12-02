@@ -1,0 +1,30 @@
+# Ignore all log files
+*.log
+
+# Ignore environment files
+.env
+
+# Ignore database files
+*.db
+
+# Ignore Python cache
+__pycache__/
+frontend/Frontend/node_modules
+
+# Ignore specific file
+secret.txt
+frontend/Frontend/public
+frontend/Frontend/src/reportWebVitals.js
+frontend/Frontend/vite.config.js
+
+# Ignore folder
+uploads/
+
+# Ignore common OS/temp files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE files
+.vscode/
+.idea/
+
