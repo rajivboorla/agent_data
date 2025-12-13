@@ -1,7 +1,17 @@
+import configparser
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-DATABASE_URL = "postgresql://postgres:password123@localhost:5432/level1"
+config = configparser.ConfigParser()
+config.read('config.prop')
+
+db_user = config.get('DB_CRED','DB_USER')
+db_pass = config.get('DB_CRED','DB_PASSWORD')
+db_host = config.get('DB_CRED','DB_HOST')
+db_port = config.get('DB_CRED','DB_PORT')
+db_name = config.get('DB_CRED','DB_NAME')
+
+DATABASE_URL = f"postgresql://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}"
  
 engine = create_engine(DATABASE_URL)
 

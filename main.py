@@ -1,3 +1,4 @@
+from database import config
 import uvicorn
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -5,8 +6,32 @@ from sqlalchemy.orm import Session
 from database import SessionLocal, engine
 from models import Base, Agent
 from schemas import AgentCreate, AgentResponse
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi import status
+
 
 app = FastAPI()
+
+security = HTTPBearer()
+
+# Ideally fetch this from DB / ENV / JWT
+
+VALID_TOKEN = config.get('TOKEN','AUTH_TOKEN')
+
+def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    if credentials.scheme != "Bearer":
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication scheme"
+        )
+
+    if credentials.credentials != VALID_TOKEN:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token"
+        )
+
+    return credentials.credentials
 
 # Create tables if not present
 Base.metadata.create_all(bind=engine)
@@ -27,7 +52,7 @@ def get_db():
 
 
 @app.post("/agents", response_model=AgentResponse)
-def create_agent(agent: AgentCreate, db: Session = Depends(get_db)):
+def create_agent(agent: AgentCreate, token: str = Depends(verify_token), db: Session = Depends(get_db)):
     db_agent = Agent(**agent.dict())
     db.add(db_agent)
     db.commit()
@@ -36,7 +61,7 @@ def create_agent(agent: AgentCreate, db: Session = Depends(get_db)):
 
 
 @app.get("/agents", response_model=list[AgentResponse])
-def get_agents(db: Session = Depends(get_db)):
+def get_agents(token: str = Depends(verify_token), db: Session = Depends(get_db)):
     return db.query(Agent).all()
 
 
