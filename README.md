@@ -41,7 +41,7 @@ pip install fastapi uvicorn sqlalchemy psycopg2
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-DATABASE_URL = "postgresql://postgres:yourpassword@localhost:5432/level1"
+DATABASE_URL = "postgresql://yourusername:yourpassword@hostname:portnumber/databasename"
 
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -54,4 +54,6 @@ bind  -- > this tells SQL Alchemy to “Use this database engine for all session
 Base = declarative_base()
 
 - ----------to access the application apis --
-http://0.0.0.0:8000
+http://localhost:8000
+or http://127.0.0.1:8000/
+
