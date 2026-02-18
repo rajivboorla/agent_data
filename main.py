@@ -1,6 +1,7 @@
 from database import config
 import uvicorn
 from fastapi import FastAPI, Depends, HTTPException
+from loguru import logger
 from sqlalchemy.orm import Session
 
 from database import SessionLocal, engine
@@ -11,7 +12,6 @@ from fastapi import status
 
 
 app = FastAPI()
-
 security = HTTPBearer()
 
 # Ideally fetch this from DB / ENV / JWT
@@ -19,6 +19,7 @@ security = HTTPBearer()
 VALID_TOKEN = config.get('TOKEN','AUTH_TOKEN')
 
 def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    # logger.info(f"Received token: {credentials.credentials}")
     if credentials.scheme != "Bearer":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -42,7 +43,6 @@ def get_db():
     Yield a database session.
     Create a new database session for a request and close it after the request is done
     this prevents memory leaks and ensures that connection errors.
-    
     """ 
     db = SessionLocal()
     try:
