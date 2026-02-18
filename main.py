@@ -3,13 +3,13 @@ import uvicorn
 from fastapi import FastAPI, Depends, HTTPException
 from loguru import logger
 from sqlalchemy.orm import Session
-
+from jose import jwt, JWTError
 from database import SessionLocal, engine
 from models import Base, Agent
 from schemas import AgentCreate, AgentResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi import status
-
+from auth import ALGORITHM, create_access_token, create_refresh_token, SECRET_KEY
 
 app = FastAPI()
 security = HTTPBearer()
@@ -18,21 +18,54 @@ security = HTTPBearer()
 
 VALID_TOKEN = config.get('TOKEN','AUTH_TOKEN')
 
+# def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
+#     # logger.info(f"Received token: {credentials.credentials}")
+#     if credentials.scheme != "Bearer":
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail="Invalid authentication scheme"
+#         )
+
+#     if credentials.credentials != VALID_TOKEN:
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail="Invalid or expired token"
+#         )
+
+#     return credentials.credentials
+
 def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
-    # logger.info(f"Received token: {credentials.credentials}")
+
     if credentials.scheme != "Bearer":
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid authentication scheme"
         )
 
-    if credentials.credentials != VALID_TOKEN:
+    token = credentials.credentials
+
+    # ✅ 1. Allow old static token
+    if token == VALID_TOKEN:
+        return {"auth_type": "static"}
+
+    # ✅ 2. Try JWT validation
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+
+        if payload.get("type") != "access":
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid access token"
+            )
+
+        return payload
+
+    except JWTError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid or expired token"
         )
 
-    return credentials.credentials
 
 # Create tables if not present
 Base.metadata.create_all(bind=engine)
@@ -49,6 +82,40 @@ def get_db():
         yield db
     finally:
         db.close()
+
+@app.post("/login")
+def login():
+    user_data = {"sub": "agent_user"}
+
+    access_token = create_access_token(user_data)
+    refresh_token = create_refresh_token(user_data)
+
+    return {
+        "access_token": access_token,
+        "refresh_token": refresh_token,
+        "token_type": "bearer"
+    }
+
+
+
+@app.post("/refresh")
+def refresh_token(refresh_token: str):
+    try:
+        payload = jwt.decode(refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
+
+        if payload.get("type") != "refresh":
+            raise HTTPException(status_code=401, detail="Invalid refresh token")
+
+        new_access_token = create_access_token({"sub": payload["sub"]})
+
+        return {
+            "access_token": new_access_token,
+            "token_type": "bearer"
+        }
+
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
+
 
 
 @app.post("/agents", response_model=AgentResponse)
