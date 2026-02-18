@@ -96,6 +96,8 @@ def login():
         "token_type": "bearer"
     }
 
+
+
 @app.post("/refresh")
 def refresh_token(refresh_token: str):
     try:
@@ -113,6 +115,7 @@ def refresh_token(refresh_token: str):
 
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
+
 
 
 @app.post("/agents", response_model=AgentResponse)
