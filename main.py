@@ -10,6 +10,7 @@ from schemas import AgentCreate, AgentResponse
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi import status
 from auth import ALGORITHM, create_access_token, create_refresh_token, SECRET_KEY
+from loguru import logger
 
 app = FastAPI()
 security = HTTPBearer()
@@ -51,7 +52,7 @@ def verify_token(credentials: HTTPAuthorizationCredentials = Depends(security)):
     # ✅ 2. Try JWT validation
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-
+        logger.info(f"Decoded JWT payload: {payload}")
         if payload.get("type") != "access":
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -83,6 +84,7 @@ def get_db():
     finally:
         db.close()
 
+
 @app.post("/login")
 def login():
     user_data = {"sub": "agent_user"}
@@ -95,7 +97,6 @@ def login():
         "refresh_token": refresh_token,
         "token_type": "bearer"
     }
-
 
 
 @app.post("/refresh")
