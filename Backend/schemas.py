@@ -15,3 +15,4 @@ class AgentResponse(AgentBase):
 
     model_config = {"from_attributes": True}  # replaces orm_mode = True
     
+    
