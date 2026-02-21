@@ -26,3 +26,4 @@ def create_refresh_token(data: dict):
     logger.info(f"Creating refresh token with data: {to_encode}")
 
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
