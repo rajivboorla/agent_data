@@ -11,8 +11,21 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi import status
 from auth import ALGORITHM, create_access_token, create_refresh_token, SECRET_KEY
 from loguru import logger
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+origins = [
+    "http://localhost:5173",  # your frontend
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 security = HTTPBearer()
 
 # Ideally fetch this from DB / ENV / JWT
