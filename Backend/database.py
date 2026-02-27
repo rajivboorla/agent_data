@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 config = configparser.ConfigParser()
-config.read('config.prop')
+config.read('config.ini')
 
 db_user = config.get('DB_CRED','DB_USER')
 db_pass = config.get('DB_CRED','DB_PASSWORD')
