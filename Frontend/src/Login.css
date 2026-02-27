@@ -1,0 +1,69 @@
+/* Full page background */
+/* Reset everything */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+/* FULL WIDTH BACKGROUND FIX */
+.login-container {
+  width: 100vw;        /* force full viewport width */
+  min-height: 100vh;   /* full height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+}
+/* Card */
+.login-card {
+    background: white;
+    padding: 40px 50px;
+    border-radius: 15px;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 350px;
+    transition: 0.3s ease;
+}
+
+.login-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Heading */
+.login-card h2 {
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.login-card p {
+    color: #666;
+    margin-bottom: 30px;
+}
+
+/* Button */
+.login-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: #667eea;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.login-btn:hover {
+    background: #5563c1;
+}
+
+.login-btn:disabled {
+    background: #aaa;
+    cursor: not-allowed;
+}
