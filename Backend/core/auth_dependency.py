@@ -2,7 +2,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt, JWTError
 from database import config
-from routers.auth import SECRET_KEY, ALGORITHM
+from core.auth import SECRET_KEY, ALGORITHM
 
 security = HTTPBearer()
 
@@ -10,7 +10,7 @@ VALID_TOKEN = config.get("AUTH", "STATIC_TOKEN", fallback=None)
 
 def verify_token(
     credentials: HTTPAuthorizationCredentials = Depends(security),
-):
+): # This is the main auth dependency that will be used in protected routes to verify JWT tokens or static tokens contains scheme & token credentials 
 
     if credentials.scheme != "Bearer":
         raise HTTPException(
