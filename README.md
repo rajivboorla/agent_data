@@ -57,7 +57,7 @@ JWT settings are defined in `config.ini`:
 - SQLAlchemy ORM
 - PostgreSQL
 - Users table: `practice.t_users_data`
-- Agents table: 'practice.t_agents_data'
+- Agents table: `practice.t_agents_data`
 ---
 
 ## ▶️ Running the Application
