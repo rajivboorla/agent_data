@@ -1,18 +1,19 @@
 from fastapi import FastAPI
-from routers import agents, auth, users
+from routers import agents, users, auth
+from database import config
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="RBAC FastAPI App")
 
 # ✅ Include all routers
-app.include_router(auth.router)     # <-- you missed this
-app.include_router(users.router)
-app.include_router(agents.router)
+app.include_router(auth.router)     # Include auth router first to ensure /auth routes are registered before others
+app.include_router(users.router)    # Include users router after auth to ensure it can use auth dependencies
+app.include_router(agents.router)   # Include agents router last to ensure it can use auth and user dependencies
 
 # ✅ CORS
 origins = [
-    "http://localhost:5173",  # React frontend
+    config.get("CORS", "ORIGIN", fallback="http://localhost:5173"),  # React frontend
 ]
 
 app.add_middleware(
