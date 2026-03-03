@@ -1,25 +1,27 @@
-/* Full page background */
 /* Reset everything */
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-html, body, #root {
-  height: 100%;
-  width: 100%;
+html,
+body,
+#root {
+    height: 100%;
+    width: 100%;
 }
 
-/* FULL WIDTH BACKGROUND FIX */
+/* FULL WIDTH BACKGROUND */
 .login-container {
-  width: 100vw;        /* force full viewport width */
-  min-height: 100vh;   /* full height */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+    width: 100vw;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #667eea, #764ba2);
 }
+
 /* Card */
 .login-card {
     background: white;
@@ -43,12 +45,34 @@ html, body, #root {
 
 .login-card p {
     color: #666;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
+}
+
+/* Form */
+.login-card form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Inputs */
+.login-card input {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 14px;
+    transition: 0.3s ease;
+}
+
+.login-card input:focus {
+    border-color: #667eea;
+    outline: none;
+    box-shadow: 0 0 5px rgba(102, 126, 234, 0.5);
 }
 
 /* Button */
 .login-btn {
-    width: 100%;
+    margin-top: 10px;
     padding: 12px;
     border: none;
     border-radius: 8px;
@@ -66,4 +90,10 @@ html, body, #root {
 .login-btn:disabled {
     background: #aaa;
     cursor: not-allowed;
+}
+
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: -5px;
 }

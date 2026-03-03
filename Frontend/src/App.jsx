@@ -16,10 +16,18 @@ function App() {
 
   const fetchAgents = async () => {
     try {
-      const res = await API.get("/agents");
-      setAgents(res.data);
+      const res = await API.get("/agents", {
+        params: {
+          sort_by: "name",
+          order: "asc",
+        },
+      });
+
+      setAgents(res.data)
+      console.log("Agents fetched:", res.data);
     } catch (err) {
       alert("Error fetching agents");
+      console.error("Error fetching agents:", err);
     }
   };
 

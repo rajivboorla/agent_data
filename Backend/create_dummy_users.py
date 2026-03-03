@@ -11,22 +11,34 @@ db = SessionLocal()
 # Dummy users
 users = [
     {
-        "username": "admin1",
-        "email": "admin1@test.com",
+        "username": "admin2",
+        "email": "admin2@test.com",
         "password": "admin123",
         "role": "admin"
     },
     {
-        "username": "operator1",
-        "email": "operator1@test.com",
+        "username": "operator4",
+        "email": "operator4@test.com",
         "password": "operator123",
         "role": "operator"
     },
     {
-        "username": "operator2",
-        "email": "operator2@test.com",
+        "username": "operator3",
+        "email": "operator3@test.com",
         "password": "operator123",
         "role": "operator"
+    },
+    {
+        "username": "operator5",
+        "email": "operator5@test.com",
+        "password": "operator123",
+        "role": "operator"  
+    },
+    {
+        "username": "admin3",
+        "email": "admin3@test.com",
+        "password": "admin123",
+        "role": "admin"
     }
 ]
 

@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import asc, desc
 from models.agent import Agent
 from schemas.agent import AgentCreate, AgentResponse
 from database import SessionLocal
@@ -20,11 +21,28 @@ def get_db():
 # ✅ GET ALL (Admin + Operator)
 @router.get("/", response_model=list[AgentResponse])
 def get_agents(
-    current_user: dict = Depends(require_roles(["admin", "operator"])),
-    db: Session = Depends(get_db)
-):
-    return db.query(Agent).all()
+                sort_by: str = Query("agent_id"),
+                order: str = Query("asc"),
+                limit: int = Query(10),
+                offset: int = Query(0),
+                current_user: dict = Depends(require_roles(["admin", "operator"])),
+                db: Session = Depends(get_db)
+           ):
 
+    query = db.query(Agent)
+
+    # Dynamic column sorting
+    if hasattr(Agent, sort_by):
+        column = getattr(Agent, sort_by)
+
+        if order.lower() == "desc":
+            query = query.order_by(desc(column))
+        else:
+            query = query.order_by(asc(column))
+
+    agents = query.offset(offset).limit(limit).all()
+
+    return agents
 
 # ✅ CREATE (Admin Only)
 @router.post("/", response_model=AgentResponse)
