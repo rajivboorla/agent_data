@@ -1,0 +1,16 @@
+routers
+│
+├── auth.py
+│     POST /auth/login
+│     POST /auth/refresh
+│
+├── oauth.py
+│     GET /auth/google/login
+│     GET /auth/google/callback
+│
+└── users.py
+      POST /users/register
+      POST /users/login
+      GET  /users
+
+
