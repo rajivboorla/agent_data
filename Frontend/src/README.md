@@ -11,3 +11,23 @@ api.js     → attaches access token
 
 npm audit fix
 npm run dev
+
+
+UI 
+-----------------------
+|   Welcome Back 👋   |
+|  Please login       |
+|                     |
+|  Username           |
+|  Password           |
+|  [ Login ]          |
+|                     |
+| ------ OR --------  |
+|  [ Login with Google ]
+-----------------------
+
+Backend APIs has below endpoints for accessing it 
+
+POST /auth/login
+GET  /auth/google/login
+GET  /auth/google/callback

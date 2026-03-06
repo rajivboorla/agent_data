@@ -1,13 +1,21 @@
 from fastapi import FastAPI
-from routers import agents, users, auth
+from routers import agents, users, auth, oauth
 from database import config
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.middleware.sessions import SessionMiddleware # 
+
 
 app = FastAPI(title="RBAC FastAPI App")
 
+app.add_middleware(
+    SessionMiddleware,
+    secret_key="super-secret-key"  # change this in production
+)
+
 # ✅ Include all routers
 app.include_router(auth.router)     # Include auth router first to ensure /auth routes are registered before others
+app.include_router(oauth.router)    # Include OAuth router to ensure OAuth routes are registered
 app.include_router(users.router)    # Include users router after auth to ensure it can use auth dependencies
 app.include_router(agents.router)   # Include agents router last to ensure it can use auth and user dependencies
 

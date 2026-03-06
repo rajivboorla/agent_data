@@ -1,0 +1,9 @@
+
+main.jsx – Entry Point of the React App
+This is the first file that runs when the app starts. It loads React into the browser.
+
+App.jsx – Main Application Controller
+This is the main component that controls which pages/components appear.
+
+api.js – API Communication Layer
+This file handles all backend communication.
