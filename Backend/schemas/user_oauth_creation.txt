@@ -1,0 +1,46 @@
+"""
+user OAuth login / creation description
+"""
+
+React Login Button
+       ↓
+OAuth Provider (Google / Microsoft)
+       ↓
+Provider returns authorization code
+       ↓
+FastAPI exchanges code for user info
+       ↓
+Create user in DB if not exists
+       ↓
+Generate JWT (access + refresh)
+       ↓
+Send tokens to React
+       ↓
+User logged in
+
+----------------------------------------------------------------------------
+
+React
+ ↓
+FastAPI /oauth/google/login
+ ↓
+Google login page
+ ↓
+Google redirects to /oauth/google/callback
+ ↓
+FastAPI creates JWT
+
+
+google client id & secret creation in google 
+
+https://console.cloud.google.com
+
+Select or create your project.
+APIs & Services → OAuth consent screen
+Get Started
+Field	Example
+App name	FastAPI OAuth App
+User support email	your Gmail
+
+Authorized JavaScript Origins
+Authorized Redirect URIs
