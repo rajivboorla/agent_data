@@ -17,19 +17,23 @@ def get_db():
     finally:
         db.close()
 
+# http://localhost:8000/agents?agent_id=1
 
 # ✅ GET ALL (Admin + Operator)
 @router.get("/", response_model=list[AgentResponse])
 def get_agents(
-                sort_by: str = Query("agent_id"),
-                order: str = Query("asc"),
-                limit: int = Query(10),
-                offset: int = Query(0),
-                current_user: dict = Depends(require_roles(["admin", "operator"])),
-                db: Session = Depends(get_db)
-           ):
-
+        agent_id: int | None = Query(None),
+        sort_by: str = Query("agent_id"),
+        order: str = Query("asc"),
+        limit: int = Query(10),
+        offset: int = Query(0),
+        current_user: dict = Depends(require_roles(["admin", "operator"])),
+        db: Session = Depends(get_db) ):
     query = db.query(Agent)
+
+    # Filter by agent_id if provided
+    if agent_id:
+        query = query.filter(Agent.agent_id == agent_id)
 
     # Dynamic column sorting
     if hasattr(Agent, sort_by):
